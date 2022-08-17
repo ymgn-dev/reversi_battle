@@ -51,3 +51,9 @@ flutter_intl:
   main_locale: ja
   arb_dir: assets/l10n
   output_dir: lib/generated
+
+flutter_gen:
+  output: lib/generated/
+  line_length: 80
+  integrations:
+    flutter_svg: true
