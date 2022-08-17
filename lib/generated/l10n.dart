@@ -49,6 +49,16 @@ class L {
   static L? maybeOf(BuildContext context) {
     return Localizations.of<L>(context, L);
   }
+
+  /// `Reversi Battle`
+  String get appTitle {
+    return Intl.message(
+      'Reversi Battle',
+      name: 'appTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<L> {

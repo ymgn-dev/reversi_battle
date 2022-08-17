@@ -5,7 +5,8 @@ import 'package:reversi_battle/features/board/constants.dart';
 import 'package:reversi_battle/models/board/board.dart';
 import 'package:reversi_battle/utils/logger.dart';
 
-final boardProvider = StateNotifierProvider((ref) => BoardNotifier());
+final boardProvider = StateNotifierProvider<BoardNotifier, AsyncValue<Board>>(
+    (ref) => BoardNotifier());
 
 class BoardNotifier extends StateNotifier<AsyncValue<Board>> {
   BoardNotifier() : super(const AsyncValue.loading()) {
@@ -18,7 +19,7 @@ class BoardNotifier extends StateNotifier<AsyncValue<Board>> {
     // プレイヤー・相手の手番が決まればボードを更新
     state = await AsyncValue.guard(() async {
       final board =
-          Board(player: initWBits, opponent: initWBits, turn: turnBlack);
+          Board(player: initWBits, opponent: initBBits, turn: turnBlack);
       return board;
     });
 

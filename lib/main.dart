@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:reversi_battle/features/board/game_page.dart';
+import 'package:reversi_battle/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Reversi Battle',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const GamePage(),
+      home: const App(),
     );
   }
 }
