@@ -9,6 +9,5 @@ class Board with _$Board {
   const factory Board({
     required BigInt player,
     required BigInt opponent,
-    required int turn,
   }) = _Board;
 }

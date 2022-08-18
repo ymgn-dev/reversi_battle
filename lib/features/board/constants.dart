@@ -14,11 +14,9 @@ final m32 = BigInt.parse('0x00000000ffffffff');
 //the sum of 256 to the power of 0,1,2,3...
 final h01 = BigInt.parse('0x0101010101010101');
 
-final initWBits = BigInt.parse('0x0000001008000000');
-final initBBits = BigInt.parse('0x0000000810000000');
+// 白番・黒番の初期配置
+final whiteInitialBoard = BigInt.parse('0x0000001008000000');
+final blackInitialBoard = BigInt.parse('0x0000000810000000');
 
 final one = BigInt.one;
 final zero = BigInt.zero;
-
-const turnBlack = 0;
-const turnWhite = 1;

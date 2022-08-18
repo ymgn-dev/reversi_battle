@@ -28,6 +28,9 @@ class _Board extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final board = ref.watch(boardProvider);
+    final boardNotifier = ref.watch(boardProvider.notifier);
+    final currentTurn = ref.watch(currentTurnProvider);
+    final playerTurn = ref.watch(playerTurnProvider);
 
     return board.when(
       data: (data) => Container(
@@ -57,9 +60,18 @@ class _Board extends HookConsumerWidget {
                       heightFactor: 0.9,
                       child: GestureDetector(
                         onTap: () {
-                          logger.info(
-                            '0x${pos.toRadixString(16).padLeft(16, '0')}',
-                          );
+                          final str =
+                              '0x${pos.toRadixString(16).padLeft(16, '0')}';
+                          if (boardNotifier.canMove(
+                            BigInt.parse(str),
+                            currentTurn,
+                          )) {
+                            boardNotifier.move(
+                              BigInt.parse(str),
+                              currentTurn,
+                            );
+                            logger.info(currentTurn);
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(
