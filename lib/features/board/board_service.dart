@@ -35,8 +35,14 @@ class BoardService {
     );
   }
 
+  /// ターンを入れ替える
   Turn swapTurn(Turn turn) {
     return turn == Turn.black ? Turn.white : Turn.black;
+  }
+
+  /// プレイヤー側と相手側の盤面を入れ替える
+  Board swapBoard(Board board) {
+    return Board(player: board.opponent, opponent: board.player);
   }
 
   /// [board.player]側の合法手ボードを生成
@@ -49,7 +55,7 @@ class BoardService {
     // 全辺の番人
     final all = board.opponent & BigInt.parse('0x007e7e7e7e7e7e00');
     // 空きマスのみにビットが立っている盤面
-    final vacant = _vacant(board);
+    final vacant_ = vacant(board);
     // 隣に手番でない側の石があるか一時保存
     var tmp = BigInt.zero;
     // 返り値
@@ -64,7 +70,7 @@ class BoardService {
     tmp |= horizontal & (tmp << 1);
     tmp |= horizontal & (tmp << 1);
     tmp |= horizontal & (tmp << 1);
-    retBits = vacant & (tmp << 1);
+    retBits = vacant_ & (tmp << 1);
 
     // 右
     tmp = horizontal & (board.player >> 1);
@@ -73,7 +79,7 @@ class BoardService {
     tmp |= horizontal & (tmp >> 1);
     tmp |= horizontal & (tmp >> 1);
     tmp |= horizontal & (tmp >> 1);
-    retBits |= vacant & (tmp >> 1);
+    retBits |= vacant_ & (tmp >> 1);
 
     // 上
     tmp = vertical & (board.player << 8);
@@ -82,7 +88,7 @@ class BoardService {
     tmp |= vertical & (tmp << 8);
     tmp |= vertical & (tmp << 8);
     tmp |= vertical & (tmp << 8);
-    retBits |= vacant & (tmp << 8);
+    retBits |= vacant_ & (tmp << 8);
 
     // 下
     tmp = vertical & (board.player >> 8);
@@ -91,7 +97,7 @@ class BoardService {
     tmp |= vertical & (tmp >> 8);
     tmp |= vertical & (tmp >> 8);
     tmp |= vertical & (tmp >> 8);
-    retBits |= vacant & (tmp >> 8);
+    retBits |= vacant_ & (tmp >> 8);
 
     // 右斜め上
     tmp = all & (board.player << 7);
@@ -100,7 +106,7 @@ class BoardService {
     tmp |= all & (tmp << 7);
     tmp |= all & (tmp << 7);
     tmp |= all & (tmp << 7);
-    retBits |= vacant & (tmp << 7);
+    retBits |= vacant_ & (tmp << 7);
 
     // 左斜め上
     tmp = all & (board.player << 9);
@@ -109,7 +115,7 @@ class BoardService {
     tmp |= all & (tmp << 9);
     tmp |= all & (tmp << 9);
     tmp |= all & (tmp << 9);
-    retBits |= vacant & (tmp << 9);
+    retBits |= vacant_ & (tmp << 9);
 
     // 右斜め下
     tmp = all & (board.player >> 9);
@@ -118,7 +124,7 @@ class BoardService {
     tmp |= all & (tmp >> 9);
     tmp |= all & (tmp >> 9);
     tmp |= all & (tmp >> 9);
-    retBits |= vacant & (tmp >> 9);
+    retBits |= vacant_ & (tmp >> 9);
 
     // 左斜め下
     tmp = all & (board.player >> 7);
@@ -127,30 +133,40 @@ class BoardService {
     tmp |= all & (tmp >> 7);
     tmp |= all & (tmp >> 7);
     tmp |= all & (tmp >> 7);
-    retBits |= vacant & (tmp >> 7);
+    retBits |= vacant_ & (tmp >> 7);
 
     return retBits;
   }
 
   /// 石数をカウントする
-  int _populationCount(BigInt bits) {
-    bits -= ((bits >> 1) & m1);
-    bits = (bits & m2) + ((bits >> 2) & m2);
-    bits = (bits + (bits >> 4)) & m4;
-    bits += (bits >> 8);
-    bits += (bits >> 16);
-    bits += (bits >> 32);
-    return (bits & BigInt.from(0x7f)).toInt();
+  int populationCount(BigInt bit) {
+    bit -= ((bit >> 1) & m1);
+    bit = (bit & m2) + ((bit >> 2) & m2);
+    bit = (bit + (bit >> 4)) & m4;
+    bit += (bit >> 8);
+    bit += (bit >> 16);
+    bit += (bit >> 32);
+    return (bit & BigInt.from(0x7f)).toInt();
   }
 
   /// 空きマスのみにビットが立っている盤面を返す
-  BigInt _vacant(Board board) {
+  BigInt vacant(Board board) {
     return ~(board.player | board.opponent);
   }
 
   /// 空きマスの数をカウントする
-  int _vacantCount(Board board) {
-    return _populationCount(_vacant(board));
+  int vacantCount(Board board) {
+    return populationCount(vacant(board));
+  }
+
+  /// [board.player]が[m]に着手した時に反転する数を求める
+  /// [m]着手位置にのみビットが立っている盤面
+  /// [board]盤面
+  int swapCount(BigInt m, Board board) {
+    final result = move(m, board);
+
+    return (populationCount(result.player ^ board.player) +
+        populationCount(result.opponent ^ board.opponent));
   }
 
   /// 反転箇所を求める
