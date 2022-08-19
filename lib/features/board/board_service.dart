@@ -160,6 +160,7 @@ class BoardService {
   }
 
   /// [board.player]が[m]に着手した時に反転する数を求める
+  /// 着手した石も含まれる
   /// [m]着手位置にのみビットが立っている盤面
   /// [board]盤面
   int swapCount(BigInt m, Board board) {
