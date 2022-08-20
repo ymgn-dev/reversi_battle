@@ -13,20 +13,21 @@ class App extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-        navigatorKey: ref.read(navigatorKeyProvider),
-        scaffoldMessengerKey: ref.read(scaffoldMessengerKeyProvider),
-        onGenerateTitle: (context) => L.of(context).appTitle,
-        useInheritedMediaQuery: true,
-        theme: appThemeLight(),
-        darkTheme: appThemeDark(),
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: const [
-          L.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: L.delegate.supportedLocales,
-        home: const GamePage());
+      navigatorKey: ref.read(navigatorKeyProvider),
+      scaffoldMessengerKey: ref.read(scaffoldMessengerKeyProvider),
+      onGenerateTitle: (context) => L.of(context).appTitle,
+      useInheritedMediaQuery: true,
+      theme: appThemeLight(),
+      darkTheme: appThemeDark(),
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        L.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L.delegate.supportedLocales,
+      home: const GamePage(),
+    );
   }
 }

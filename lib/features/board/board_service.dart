@@ -3,7 +3,7 @@ import 'package:reversi_battle/models/game/board.dart';
 import 'package:reversi_battle/models/game/turn.dart';
 
 class BoardService {
-  /// [board.player]側の着手可否を判定
+  /// player側の着手可否を判定
   /// [move]着手位置にのみビットが立っているボード
   /// [board]盤面
   bool canMove(BigInt move, Board board) {
@@ -12,11 +12,12 @@ class BoardService {
     return (move & moves) == move;
   }
 
-  /// [board.player]側の着手処理
+  /// player側の着手処理
   /// [move]着手位置にのみビットが立っているボード
   /// [board]盤面
   Board move(BigInt move, Board board) {
     var rev = zero;
+
     for (var dir = 0; dir < 8; dir++) {
       var rev_ = zero;
       var mask = _transfer(move, dir);
@@ -40,12 +41,12 @@ class BoardService {
     return turn == Turn.black ? Turn.white : Turn.black;
   }
 
-  /// プレイヤー側と相手側の盤面を入れ替える
+  /// playerとopponentの盤面を入れ替える
   Board swapBoard(Board board) {
     return Board(player: board.opponent, opponent: board.player);
   }
 
-  /// [board.player]側の合法手ボードを生成
+  /// player側の合法手ボードを生成
   /// [board]盤面
   BigInt getMoves(Board board) {
     // 左右の番人
@@ -159,8 +160,7 @@ class BoardService {
     return populationCount(vacant(board));
   }
 
-  /// [board.player]が[m]に着手した時に反転する数を求める
-  /// 着手した石も含まれる
+  /// playerが[m]に着手した時に反転する数を求める(着手した石もカウントに含まれる)
   /// [m]着手位置にのみビットが立っている盤面
   /// [board]盤面
   int swapCount(BigInt m, Board board) {
