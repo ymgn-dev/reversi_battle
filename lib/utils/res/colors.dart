@@ -44,3 +44,4 @@ const kBoardBorderColor = Color(0xFF2C3E50);
 const kDiscWhiteColor = Colors.white;
 const kDiscBlackColor = Colors.black;
 const kLatestMovePointColor = Colors.red;
+const kCanMoveNextTurnPointColor = Colors.grey;

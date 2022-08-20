@@ -5,24 +5,42 @@ import 'package:reversi_battle/features/board/board_constants.dart';
 import 'package:reversi_battle/features/board/board_service.dart';
 import 'package:reversi_battle/models/board.dart';
 import 'package:reversi_battle/models/turn.dart';
+import 'package:reversi_battle/utils/logger.dart';
 
 final gameProvider =
     StateNotifierProvider.autoDispose<GameNotifier, AsyncValue<Board>>(
-  (ref) => GameNotifier(ref.read, boardService: BoardService()),
+  (ref) {
+    ref.onDispose(() => logger.info('gameProvider#dispose'));
+    return GameNotifier(ref.read, boardService: BoardService());
+  },
 );
 
-final turnProvider = StateProvider.autoDispose((_) => Turn.black);
-
-final _passController = StreamController<bool>();
-final passProvider = StreamProvider.autoDispose<bool>((ref) {
-  ref.onDispose(_passController.close);
-  return _passController.stream;
+final turnProvider = StateProvider.autoDispose((ref) {
+  ref.onDispose(() => logger.info('turnProvider#dispose'));
+  return Turn.black;
 });
 
-final _gameOverController = StreamController<bool>();
+StreamController<bool>? _passController;
+final passProvider = StreamProvider.autoDispose<bool>((ref) {
+  ref.onDispose((() {
+    _passController?.close();
+    _passController = null;
+    logger.info('passProvider#dispose');
+  }));
+  _passController ??= StreamController<bool>();
+  return _passController!.stream;
+});
+
+StreamController<bool>? _gameOverController;
 final gameOverProvider = StreamProvider.autoDispose<bool>((ref) {
-  ref.onDispose(_gameOverController.close);
-  return _gameOverController.stream;
+  ref.onDispose(() {
+    _gameOverController?.close();
+    _gameOverController = null;
+    logger.info('gameOverProvider#dispose');
+  });
+
+  _gameOverController ??= StreamController<bool>();
+  return _gameOverController!.stream;
 });
 
 class GameNotifier extends StateNotifier<AsyncValue<Board>> {
@@ -42,6 +60,7 @@ class GameNotifier extends StateNotifier<AsyncValue<Board>> {
       );
       return board;
     });
+    logger.info('GameNotifier#_init');
   }
 
   bool tryMove(BigInt move, Board board) {
@@ -54,24 +73,38 @@ class GameNotifier extends StateNotifier<AsyncValue<Board>> {
 
   void _moveAndProgressGame(BigInt move, Board board) {
     final movedBoard = boardService.doMove(move, board);
-    final nextBoard = boardService.swapPlayerAndOpponent(movedBoard);
+    state = AsyncValue.data(movedBoard);
+    _checkUpdate();
+  }
+
+  void _checkUpdate() {
+    if (state.value == null) {
+      return;
+    }
+
+    final board = state.value!;
+    final nextBoard = boardService.swapPlayerAndOpponent(board);
 
     // 終局の判定
     final isGameOver = boardService.isGameOver(nextBoard);
     if (isGameOver) {
-      _gameOverController.sink.add(true);
+      logger.info('終局判定');
+      if (_gameOverController != null && !_gameOverController!.isClosed) {
+        _gameOverController!.add(true);
+      } else {
+        logger.warning('_gameOverController.isClosed');
+      }
     }
 
     // パスの判定
     final isPass = boardService.isPass(nextBoard);
     if (!isGameOver && isPass) {
-      _passController.sink.add(true);
+      if (_passController != null && !_passController!.isClosed) {
+        _passController!.add(true);
+      }
     }
 
-    if (isPass || isGameOver) {
-      // ターンの入れ替えをしないため、盤面の入れ替えはおこなわない
-      state = AsyncValue.data(movedBoard);
-    } else {
+    if (!isPass & !isGameOver) {
       // ターンを入れ替える
       state = AsyncValue.data(nextBoard);
       _read(turnProvider.state).update((state) => boardService.swapTurn(state));

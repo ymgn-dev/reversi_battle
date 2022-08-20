@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:reversi_battle/features/board/board_service.dart';
 import 'package:reversi_battle/models/board.dart';
 import 'package:reversi_battle/models/turn.dart';
 import 'package:reversi_battle/utils/res/res.dart';
 
 class BoardWidget extends HookConsumerWidget {
-  const BoardWidget({
+  BoardWidget({
     Key? key,
     required this.board,
-    required this.currentTurn,
+    required this.turn,
     this.onSquareTap,
   }) : super(key: key);
 
   final Board board;
-  final Turn currentTurn;
+  final Turn turn;
   final Function(BigInt pos)? onSquareTap;
+
+  final _service = BoardService();
+  late final BigInt _moves = _service.getMoves(board);
 
   Color? getDiscColor(BigInt pos) {
     if (board.player & pos != BigInt.zero) {
-      return currentTurn == Turn.black ? kDiscBlackColor : kDiscWhiteColor;
+      return turn == Turn.black ? kDiscBlackColor : kDiscWhiteColor;
     }
     if (board.opponent & pos != BigInt.zero) {
-      return currentTurn == Turn.black ? kDiscWhiteColor : kDiscBlackColor;
+      return turn == Turn.black ? kDiscWhiteColor : kDiscBlackColor;
     }
     return null;
   }
@@ -51,6 +55,7 @@ class BoardWidget extends HookConsumerWidget {
                   isLatestMove: board.latestMove == null
                       ? false
                       : board.latestMove! & movePosition != BigInt.zero,
+                  canMoveOnNextTurn: _moves & movePosition != BigInt.zero,
                   discColor: getDiscColor(movePosition),
                 ),
               );
@@ -62,10 +67,15 @@ class BoardWidget extends HookConsumerWidget {
 }
 
 class _Square extends HookConsumerWidget {
-  const _Square({Key? key, required this.isLatestMove, this.discColor})
-      : super(key: key);
+  const _Square({
+    Key? key,
+    required this.isLatestMove,
+    required this.canMoveOnNextTurn,
+    this.discColor,
+  }) : super(key: key);
 
   final bool isLatestMove;
+  final bool canMoveOnNextTurn;
   final Color? discColor;
 
   @override
@@ -98,6 +108,18 @@ class _Square extends HookConsumerWidget {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: kLatestMovePointColor,
+                    ),
+                  ),
+                ),
+              if (canMoveOnNextTurn)
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: kCanMoveNextTurnPointColor,
                     ),
                   ),
                 ),

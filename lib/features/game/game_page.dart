@@ -3,6 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reversi_battle/features/game/states/game.dart';
 import 'package:reversi_battle/features/game/top_page.dart';
 import 'package:reversi_battle/features/game/widgets/board_widget.dart';
+import 'package:reversi_battle/utils/logger.dart';
+import 'package:reversi_battle/utils/scaffold_messenger_key.dart';
 
 class GamePage extends HookConsumerWidget {
   const GamePage._({Key? key}) : super(key: key);
@@ -13,18 +15,25 @@ class GamePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO(ymgn9314): streamProviderをref.listenできるのかな(分からん)
     ref.watch(passProvider).whenData((_) {
-      const snackBar = SnackBar(content: Text('パス！'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ref.read(scaffoldMessengerKeyProvider).currentState?.showSnackBar(
+            SnackBar(
+              content: const Text('パス！'),
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'DONE',
+                onPressed: () {},
+              ),
+            ),
+          );
+      logger.info('パス！');
     });
 
     ref.watch(gameOverProvider).whenData((_) {
-      const snackBar = SnackBar(content: Text('終局！'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-      // TODO(ymgn9314): これが動いていない
-      Navigator.of(context).pushAndRemoveUntil(TopPage.route, (route) => false);
+      logger.info('終局！');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(TopPage.route);
+      });
     });
 
     return Scaffold(
@@ -40,12 +49,12 @@ class GamePage extends HookConsumerWidget {
               HookConsumer(builder: ((context, ref, child) {
                 final board = ref.watch(gameProvider);
                 final notifier = ref.watch(gameProvider.notifier);
-                final currentTurn = ref.watch(turnProvider);
+                final turn = ref.watch(turnProvider);
 
                 return board.when(
                   data: (data) => BoardWidget(
                     board: data,
-                    currentTurn: currentTurn,
+                    turn: turn,
                     onSquareTap: ((pos) => notifier.tryMove(pos, data)),
                   ),
                   error: (e, s) =>
