@@ -3,6 +3,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reversi_battle/models/board.dart';
 import 'package:reversi_battle/utils/res/res.dart';
 
+/// [board]もしくは[discs]を引数に渡すことで、その盤面を表示するページです。
+///
+/// [board]を渡した場合、player側が先手(黒番)として表示されます。
+/// [discs]を渡した場合、全て先手(黒番)として表示されます。
 class DebugBoardPage extends HookConsumerWidget {
   const DebugBoardPage({Key? key, this.board, this.discs})
       : assert((board == null && discs != null) ||

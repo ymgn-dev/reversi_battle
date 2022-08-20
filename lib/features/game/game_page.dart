@@ -13,6 +13,7 @@ class GamePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO(ymgn9314): streamProviderをref.listenできるのかな(分からん)
     ref.watch(passProvider).whenData((_) {
       const snackBar = SnackBar(content: Text('パス！'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -39,7 +40,6 @@ class GamePage extends HookConsumerWidget {
               HookConsumer(builder: ((context, ref, child) {
                 final board = ref.watch(gameProvider);
                 final notifier = ref.watch(gameProvider.notifier);
-
                 final currentTurn = ref.watch(turnProvider);
 
                 return board.when(

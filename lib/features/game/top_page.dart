@@ -15,15 +15,17 @@ class TopPage extends HookConsumerWidget {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(GamePage.route);
-              },
-              child: const Text('友達とオフラインバトル'),
-            ),
-          ],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () =>
+                    Navigator.of(context).pushReplacement(GamePage.route),
+                child: const Text('友達とオフラインバトル'),
+              ),
+            ],
+          ),
         ),
       )),
     );
