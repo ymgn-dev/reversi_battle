@@ -40,5 +40,7 @@ const kGrayDarker = Color(0xFFA3A3A3);
 const kBoardColor = Color(0xFF00A000);
 const kBoardBackgroundColor = Color(0xFF34495E);
 const kBoardBorderColor = Color(0xFF2C3E50);
+
 const kDiscWhiteColor = Colors.white;
 const kDiscBlackColor = Colors.black;
+const kLatestMovePointColor = Colors.red;

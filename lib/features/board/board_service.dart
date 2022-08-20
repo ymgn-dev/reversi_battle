@@ -1,31 +1,32 @@
-import 'package:reversi_battle/features/board/constants.dart';
-import 'package:reversi_battle/models/game/board.dart';
-import 'package:reversi_battle/models/game/turn.dart';
+import 'package:reversi_battle/features/board/board_constants.dart';
+import 'package:reversi_battle/models/board.dart';
+import 'package:reversi_battle/models/turn.dart';
 
 class BoardService {
-  /// player側の着手可否を判定
-  /// [move]着手位置にのみビットが立っているボード
-  /// [board]盤面
+  /// [board]のplayer側の着手可否を判定する。
+  ///
+  /// 着手箇所にのみビットが立っている盤面を[move]に渡してください。
   bool canMove(BigInt move, Board board) {
-    // 合法手ボードを生成
     final moves = getMoves(board);
     return (move & moves) == move;
   }
 
-  /// player側の着手処理
-  /// [move]着手位置にのみビットが立っているボード
-  /// [board]盤面
-  Board move(BigInt move, Board board) {
-    var rev = zero;
+  /// [board]のplayer側の着手をおこなう。
+  ///
+  /// 着手箇所にのみビットが立っている盤面を[move]に渡してください。
+  Board doMove(BigInt move, Board board) {
+    var rev = BigInt.zero;
 
     for (var dir = 0; dir < 8; dir++) {
-      var rev_ = zero;
-      var mask = _transfer(move, dir);
-      while (mask != zero && (mask & board.opponent) != zero) {
+      var rev_ = BigInt.zero;
+      var mask = _flip(move, dir);
+
+      while (mask != BigInt.zero && (mask & board.opponent) != BigInt.zero) {
         rev_ |= mask;
-        mask = _transfer(mask, dir);
+        mask = _flip(mask, dir);
       }
-      if (mask & board.player != zero) {
+
+      if (mask & board.player != BigInt.zero) {
         rev |= rev_;
       }
     }
@@ -33,6 +34,7 @@ class BoardService {
     return Board(
       player: board.player ^ (move | rev),
       opponent: board.opponent ^ rev,
+      latestMove: move,
     );
   }
 
@@ -41,25 +43,22 @@ class BoardService {
     return turn == Turn.black ? Turn.white : Turn.black;
   }
 
-  /// パスの判定
-  /// player側がパスかを判定
+  /// [board]のplayer側がパスかどうかを判定する。
   bool isPass(Board board) {
-    return calcPopulationCount(getMoves(board)) == 0;
+    return calcDiscCount(getMoves(board)) == 0;
   }
 
-  /// 終局の判定
-  /// player, opponent両方がパスであれば終局
-  bool isGameFinished(Board board) {
-    return isPass(board) && isPass(swapBoard(board));
+  /// [board]が終局しているかどうかを判定する。
+  bool isGameOver(Board board) {
+    return isPass(board) && isPass(swapPlayerAndOpponent(board));
   }
 
-  /// playerとopponentの盤面を入れ替える
-  Board swapBoard(Board board) {
-    return Board(player: board.opponent, opponent: board.player);
+  /// [board]のplayerとopponentを入れ替える。
+  Board swapPlayerAndOpponent(Board board) {
+    return board.copyWith(player: board.opponent, opponent: board.player);
   }
 
-  /// player側の合法手ボードを生成
-  /// [board]盤面
+  /// [board]のplayer側が着手できる箇所にビットが立っている盤面を返す。
   BigInt getMoves(Board board) {
     // 左右の番人
     final horizontal = board.opponent & BigInt.parse('0x7e7e7e7e7e7e7e7e');
@@ -73,8 +72,6 @@ class BoardService {
     var tmp = BigInt.zero;
     // 返り値
     var retBits = BigInt.zero;
-
-    // 8方向チェック
 
     // 左
     tmp = horizontal & (board.player << 1);
@@ -151,41 +148,41 @@ class BoardService {
     return retBits;
   }
 
-  /// 石数をカウントする
-  int calcPopulationCount(BigInt bit) {
-    bit -= ((bit >> 1) & m1);
-    bit = (bit & m2) + ((bit >> 2) & m2);
-    bit = (bit + (bit >> 4)) & m4;
-    bit += (bit >> 8);
-    bit += (bit >> 16);
-    bit += (bit >> 32);
-    return (bit & BigInt.from(0x7f)).toInt();
+  /// 置かれているディスクの数をカウントする。
+  int calcDiscCount(BigInt discs) {
+    discs -= ((discs >> 1) & m1);
+    discs = (discs & m2) + ((discs >> 2) & m2);
+    discs = (discs + (discs >> 4)) & m4;
+    discs += (discs >> 8);
+    discs += (discs >> 16);
+    discs += (discs >> 32);
+    return (discs & BigInt.from(0x7f)).toInt();
   }
 
-  /// 空きマスのみにビットが立っている盤面を返す
+  /// 空いている箇所のみにビットが立っている盤面を返す。
   BigInt calcVacant(Board board) {
     return ~(board.player | board.opponent);
   }
 
-  /// 空きマスの数をカウントする
+  /// 空いている箇所の数をカウントする。
   int calcVacantCount(Board board) {
-    return calcPopulationCount(calcVacant(board));
+    return calcDiscCount(calcVacant(board));
   }
 
-  /// playerが[m]に着手した時に反転する数を求める(着手した石もカウントに含まれる)
-  /// [m]着手位置にのみビットが立っている盤面
-  /// [board]盤面
-  int calcSwapCount(BigInt m, Board board) {
-    final result = move(m, board);
+  /// [board]のplayer側が[move]に着手した時に反転するディスクの数をカウントする。
+  ///
+  /// 着手箇所にのみビットが立っている盤面を[move]に渡してください。
+  int calcSwapCount(BigInt move, Board board) {
+    final moved = doMove(move, board);
 
-    return calcPopulationCount(result.player ^ board.player) +
-        calcPopulationCount(result.opponent ^ board.opponent);
+    return calcDiscCount(moved.player ^ board.player) +
+        calcDiscCount(moved.opponent ^ board.opponent);
   }
 
-  /// 反転箇所を求める
-  /// move: 着手位置にのみビットが立っているボード
-  /// dir: 反転方向(8方向)
-  BigInt _transfer(BigInt move, int dir) {
+  /// [move]に着手した時に反転するディスクを返す。
+  ///
+  /// [dir]には方向(0-7の8方向)を渡してください。
+  BigInt _flip(BigInt move, int dir) {
     switch (dir) {
       case 0:
         return (move << 8) & BigInt.parse('0xffffffffffffff00');

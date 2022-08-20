@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$Board {
   BigInt get player => throw _privateConstructorUsedError;
   BigInt get opponent => throw _privateConstructorUsedError;
+  BigInt? get latestMove => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $BoardCopyWith<Board> get copyWith => throw _privateConstructorUsedError;
@@ -27,7 +28,7 @@ mixin _$Board {
 abstract class $BoardCopyWith<$Res> {
   factory $BoardCopyWith(Board value, $Res Function(Board) then) =
       _$BoardCopyWithImpl<$Res>;
-  $Res call({BigInt player, BigInt opponent});
+  $Res call({BigInt player, BigInt opponent, BigInt? latestMove});
 }
 
 /// @nodoc
@@ -42,6 +43,7 @@ class _$BoardCopyWithImpl<$Res> implements $BoardCopyWith<$Res> {
   $Res call({
     Object? player = freezed,
     Object? opponent = freezed,
+    Object? latestMove = freezed,
   }) {
     return _then(_value.copyWith(
       player: player == freezed
@@ -52,6 +54,10 @@ class _$BoardCopyWithImpl<$Res> implements $BoardCopyWith<$Res> {
           ? _value.opponent
           : opponent // ignore: cast_nullable_to_non_nullable
               as BigInt,
+      latestMove: latestMove == freezed
+          ? _value.latestMove
+          : latestMove // ignore: cast_nullable_to_non_nullable
+              as BigInt?,
     ));
   }
 }
@@ -61,7 +67,7 @@ abstract class _$$_BoardCopyWith<$Res> implements $BoardCopyWith<$Res> {
   factory _$$_BoardCopyWith(_$_Board value, $Res Function(_$_Board) then) =
       __$$_BoardCopyWithImpl<$Res>;
   @override
-  $Res call({BigInt player, BigInt opponent});
+  $Res call({BigInt player, BigInt opponent, BigInt? latestMove});
 }
 
 /// @nodoc
@@ -77,6 +83,7 @@ class __$$_BoardCopyWithImpl<$Res> extends _$BoardCopyWithImpl<$Res>
   $Res call({
     Object? player = freezed,
     Object? opponent = freezed,
+    Object? latestMove = freezed,
   }) {
     return _then(_$_Board(
       player: player == freezed
@@ -87,6 +94,10 @@ class __$$_BoardCopyWithImpl<$Res> extends _$BoardCopyWithImpl<$Res>
           ? _value.opponent
           : opponent // ignore: cast_nullable_to_non_nullable
               as BigInt,
+      latestMove: latestMove == freezed
+          ? _value.latestMove
+          : latestMove // ignore: cast_nullable_to_non_nullable
+              as BigInt?,
     ));
   }
 }
@@ -94,16 +105,20 @@ class __$$_BoardCopyWithImpl<$Res> extends _$BoardCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Board with DiagnosticableTreeMixin implements _Board {
-  const _$_Board({required this.player, required this.opponent});
+  const _$_Board(
+      {required this.player, required this.opponent, this.latestMove = null});
 
   @override
   final BigInt player;
   @override
   final BigInt opponent;
+  @override
+  @JsonKey()
+  final BigInt? latestMove;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Board(player: $player, opponent: $opponent)';
+    return 'Board(player: $player, opponent: $opponent, latestMove: $latestMove)';
   }
 
   @override
@@ -112,7 +127,8 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
     properties
       ..add(DiagnosticsProperty('type', 'Board'))
       ..add(DiagnosticsProperty('player', player))
-      ..add(DiagnosticsProperty('opponent', opponent));
+      ..add(DiagnosticsProperty('opponent', opponent))
+      ..add(DiagnosticsProperty('latestMove', latestMove));
   }
 
   @override
@@ -121,14 +137,17 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
         (other.runtimeType == runtimeType &&
             other is _$_Board &&
             const DeepCollectionEquality().equals(other.player, player) &&
-            const DeepCollectionEquality().equals(other.opponent, opponent));
+            const DeepCollectionEquality().equals(other.opponent, opponent) &&
+            const DeepCollectionEquality()
+                .equals(other.latestMove, latestMove));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(player),
-      const DeepCollectionEquality().hash(opponent));
+      const DeepCollectionEquality().hash(opponent),
+      const DeepCollectionEquality().hash(latestMove));
 
   @JsonKey(ignore: true)
   @override
@@ -139,12 +158,15 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
 abstract class _Board implements Board {
   const factory _Board(
       {required final BigInt player,
-      required final BigInt opponent}) = _$_Board;
+      required final BigInt opponent,
+      final BigInt? latestMove}) = _$_Board;
 
   @override
   BigInt get player;
   @override
   BigInt get opponent;
+  @override
+  BigInt? get latestMove;
   @override
   @JsonKey(ignore: true)
   _$$_BoardCopyWith<_$_Board> get copyWith =>

@@ -25,6 +25,9 @@ dependencies:
   json_annotation: ^4.6.0
   flutter_gen: ^4.3.0
 
+  # Routing
+  go_router: ^4.2.8
+
   # Others
   flutter_svg: ^1.1.3
 

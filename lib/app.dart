@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:reversi_battle/features/board/game_page.dart';
+import 'package:reversi_battle/features/game/top_page.dart';
 import 'package:reversi_battle/generated/l10n.dart';
 import 'package:reversi_battle/utils/navigator_key.dart';
 import 'package:reversi_battle/utils/res/res.dart';
@@ -27,7 +27,8 @@ class App extends HookConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: L.delegate.supportedLocales,
-      home: const GamePage(),
+      home: const TopPage(),
+      // home: DebugBoardPage(discs: blackInitialBoard),
     );
   }
 }

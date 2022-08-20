@@ -9,5 +9,6 @@ class Board with _$Board {
   const factory Board({
     required BigInt player,
     required BigInt opponent,
+    @Default(null) BigInt? latestMove,
   }) = _Board;
 }
