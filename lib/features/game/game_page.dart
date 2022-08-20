@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:reversi_battle/features/game/states/game.dart';
+import 'package:reversi_battle/features/game/top_page.dart';
 import 'package:reversi_battle/features/game/widgets/board_widget.dart';
 
 class GamePage extends HookConsumerWidget {
@@ -12,6 +13,19 @@ class GamePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(passProvider).whenData((_) {
+      const snackBar = SnackBar(content: Text('パス！'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+
+    ref.watch(gameOverProvider).whenData((_) {
+      const snackBar = SnackBar(content: Text('終局！'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      // TODO(ymgn9314): これが動いていない
+      Navigator.of(context).pushAndRemoveUntil(TopPage.route, (route) => false);
+    });
+
     return Scaffold(
       body: SafeArea(
         child: Padding(

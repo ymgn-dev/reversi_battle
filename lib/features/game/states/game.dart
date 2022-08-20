@@ -5,7 +5,6 @@ import 'package:reversi_battle/features/board/board_constants.dart';
 import 'package:reversi_battle/features/board/board_service.dart';
 import 'package:reversi_battle/models/board.dart';
 import 'package:reversi_battle/models/turn.dart';
-import 'package:reversi_battle/utils/logger.dart';
 
 final gameProvider =
     StateNotifierProvider.autoDispose<GameNotifier, AsyncValue<Board>>(
@@ -14,21 +13,17 @@ final gameProvider =
 
 final turnProvider = StateProvider.autoDispose((_) => Turn.black);
 
-// final passProvider = Provider((ref) {
-//   final subject = PublishSubject<bool>();
-//   ref.onDispose(() {
-//     subject.close();
-//   });
-//   return subject;
-// });
+final _passController = StreamController<bool>();
+final passProvider = StreamProvider.autoDispose<bool>((ref) {
+  ref.onDispose(_passController.close);
+  return _passController.stream;
+});
 
-// final gameOverProvider = Provider((ref) {
-//   final subject = PublishSubject<bool>();
-//   ref.onDispose(() {
-//     subject.close();
-//   });
-//   return subject;
-// });
+final _gameOverController = StreamController<bool>();
+final gameOverProvider = StreamProvider.autoDispose<bool>((ref) {
+  ref.onDispose(_gameOverController.close);
+  return _gameOverController.stream;
+});
 
 class GameNotifier extends StateNotifier<AsyncValue<Board>> {
   GameNotifier(this._read, {required this.boardService})
@@ -61,18 +56,16 @@ class GameNotifier extends StateNotifier<AsyncValue<Board>> {
     final movedBoard = boardService.doMove(move, board);
     final nextBoard = boardService.swapPlayerAndOpponent(movedBoard);
 
-    // パスの判定
-    final isPass = boardService.isPass(nextBoard);
-    if (isPass) {
-      logger.info('パス！');
-      // _read(passProvider).sink.add(true);
-    }
-
     // 終局の判定
     final isGameOver = boardService.isGameOver(nextBoard);
     if (isGameOver) {
-      logger.info('終局！');
-      // _read(gameOverProvider).sink.add(true);
+      _gameOverController.sink.add(true);
+    }
+
+    // パスの判定
+    final isPass = boardService.isPass(nextBoard);
+    if (!isGameOver && isPass) {
+      _passController.sink.add(true);
     }
 
     if (isPass || isGameOver) {

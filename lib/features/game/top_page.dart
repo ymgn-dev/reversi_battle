@@ -5,6 +5,10 @@ import 'package:reversi_battle/features/game/game_page.dart';
 class TopPage extends HookConsumerWidget {
   const TopPage({Key? key}) : super(key: key);
 
+  static MaterialPageRoute get route => MaterialPageRoute(
+        builder: ((context) => const TopPage()),
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
