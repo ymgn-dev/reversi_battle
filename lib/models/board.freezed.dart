@@ -16,8 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$Board {
-  BigInt get player => throw _privateConstructorUsedError;
-  BigInt get opponent => throw _privateConstructorUsedError;
+  BigInt get black => throw _privateConstructorUsedError;
+  BigInt get white => throw _privateConstructorUsedError;
+  dynamic get playerTurn => throw _privateConstructorUsedError;
+  dynamic get currentTurn => throw _privateConstructorUsedError;
   BigInt? get latestMove => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -28,7 +30,12 @@ mixin _$Board {
 abstract class $BoardCopyWith<$Res> {
   factory $BoardCopyWith(Board value, $Res Function(Board) then) =
       _$BoardCopyWithImpl<$Res>;
-  $Res call({BigInt player, BigInt opponent, BigInt? latestMove});
+  $Res call(
+      {BigInt black,
+      BigInt white,
+      dynamic playerTurn,
+      dynamic currentTurn,
+      BigInt? latestMove});
 }
 
 /// @nodoc
@@ -41,19 +48,29 @@ class _$BoardCopyWithImpl<$Res> implements $BoardCopyWith<$Res> {
 
   @override
   $Res call({
-    Object? player = freezed,
-    Object? opponent = freezed,
+    Object? black = freezed,
+    Object? white = freezed,
+    Object? playerTurn = freezed,
+    Object? currentTurn = freezed,
     Object? latestMove = freezed,
   }) {
     return _then(_value.copyWith(
-      player: player == freezed
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
+      black: black == freezed
+          ? _value.black
+          : black // ignore: cast_nullable_to_non_nullable
               as BigInt,
-      opponent: opponent == freezed
-          ? _value.opponent
-          : opponent // ignore: cast_nullable_to_non_nullable
+      white: white == freezed
+          ? _value.white
+          : white // ignore: cast_nullable_to_non_nullable
               as BigInt,
+      playerTurn: playerTurn == freezed
+          ? _value.playerTurn
+          : playerTurn // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      currentTurn: currentTurn == freezed
+          ? _value.currentTurn
+          : currentTurn // ignore: cast_nullable_to_non_nullable
+              as dynamic,
       latestMove: latestMove == freezed
           ? _value.latestMove
           : latestMove // ignore: cast_nullable_to_non_nullable
@@ -67,7 +84,12 @@ abstract class _$$_BoardCopyWith<$Res> implements $BoardCopyWith<$Res> {
   factory _$$_BoardCopyWith(_$_Board value, $Res Function(_$_Board) then) =
       __$$_BoardCopyWithImpl<$Res>;
   @override
-  $Res call({BigInt player, BigInt opponent, BigInt? latestMove});
+  $Res call(
+      {BigInt black,
+      BigInt white,
+      dynamic playerTurn,
+      dynamic currentTurn,
+      BigInt? latestMove});
 }
 
 /// @nodoc
@@ -81,19 +103,23 @@ class __$$_BoardCopyWithImpl<$Res> extends _$BoardCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? player = freezed,
-    Object? opponent = freezed,
+    Object? black = freezed,
+    Object? white = freezed,
+    Object? playerTurn = freezed,
+    Object? currentTurn = freezed,
     Object? latestMove = freezed,
   }) {
     return _then(_$_Board(
-      player: player == freezed
-          ? _value.player
-          : player // ignore: cast_nullable_to_non_nullable
+      black: black == freezed
+          ? _value.black
+          : black // ignore: cast_nullable_to_non_nullable
               as BigInt,
-      opponent: opponent == freezed
-          ? _value.opponent
-          : opponent // ignore: cast_nullable_to_non_nullable
+      white: white == freezed
+          ? _value.white
+          : white // ignore: cast_nullable_to_non_nullable
               as BigInt,
+      playerTurn: playerTurn == freezed ? _value.playerTurn : playerTurn,
+      currentTurn: currentTurn == freezed ? _value.currentTurn : currentTurn,
       latestMove: latestMove == freezed
           ? _value.latestMove
           : latestMove // ignore: cast_nullable_to_non_nullable
@@ -104,21 +130,32 @@ class __$$_BoardCopyWithImpl<$Res> extends _$BoardCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_Board with DiagnosticableTreeMixin implements _Board {
+class _$_Board extends _Board with DiagnosticableTreeMixin {
   const _$_Board(
-      {required this.player, required this.opponent, this.latestMove = null});
+      {required this.black,
+      required this.white,
+      this.playerTurn = Turn.black,
+      this.currentTurn = Turn.black,
+      this.latestMove = null})
+      : super._();
 
   @override
-  final BigInt player;
+  final BigInt black;
   @override
-  final BigInt opponent;
+  final BigInt white;
+  @override
+  @JsonKey()
+  final dynamic playerTurn;
+  @override
+  @JsonKey()
+  final dynamic currentTurn;
   @override
   @JsonKey()
   final BigInt? latestMove;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Board(player: $player, opponent: $opponent, latestMove: $latestMove)';
+    return 'Board(black: $black, white: $white, playerTurn: $playerTurn, currentTurn: $currentTurn, latestMove: $latestMove)';
   }
 
   @override
@@ -126,8 +163,10 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'Board'))
-      ..add(DiagnosticsProperty('player', player))
-      ..add(DiagnosticsProperty('opponent', opponent))
+      ..add(DiagnosticsProperty('black', black))
+      ..add(DiagnosticsProperty('white', white))
+      ..add(DiagnosticsProperty('playerTurn', playerTurn))
+      ..add(DiagnosticsProperty('currentTurn', currentTurn))
       ..add(DiagnosticsProperty('latestMove', latestMove));
   }
 
@@ -136,8 +175,12 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Board &&
-            const DeepCollectionEquality().equals(other.player, player) &&
-            const DeepCollectionEquality().equals(other.opponent, opponent) &&
+            const DeepCollectionEquality().equals(other.black, black) &&
+            const DeepCollectionEquality().equals(other.white, white) &&
+            const DeepCollectionEquality()
+                .equals(other.playerTurn, playerTurn) &&
+            const DeepCollectionEquality()
+                .equals(other.currentTurn, currentTurn) &&
             const DeepCollectionEquality()
                 .equals(other.latestMove, latestMove));
   }
@@ -145,8 +188,10 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(player),
-      const DeepCollectionEquality().hash(opponent),
+      const DeepCollectionEquality().hash(black),
+      const DeepCollectionEquality().hash(white),
+      const DeepCollectionEquality().hash(playerTurn),
+      const DeepCollectionEquality().hash(currentTurn),
       const DeepCollectionEquality().hash(latestMove));
 
   @JsonKey(ignore: true)
@@ -155,16 +200,23 @@ class _$_Board with DiagnosticableTreeMixin implements _Board {
       __$$_BoardCopyWithImpl<_$_Board>(this, _$identity);
 }
 
-abstract class _Board implements Board {
+abstract class _Board extends Board {
   const factory _Board(
-      {required final BigInt player,
-      required final BigInt opponent,
+      {required final BigInt black,
+      required final BigInt white,
+      final dynamic playerTurn,
+      final dynamic currentTurn,
       final BigInt? latestMove}) = _$_Board;
+  const _Board._() : super._();
 
   @override
-  BigInt get player;
+  BigInt get black;
   @override
-  BigInt get opponent;
+  BigInt get white;
+  @override
+  dynamic get playerTurn;
+  @override
+  dynamic get currentTurn;
   @override
   BigInt? get latestMove;
   @override

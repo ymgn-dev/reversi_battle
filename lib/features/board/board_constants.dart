@@ -191,7 +191,7 @@ final h01 = BigInt.parse('0x0101010101010101');
 ///    - - - - - - - -
 /// 8 | | | | | | | | |
 ///    - - - - - - - -
-final blackInitialBoard = BigInt.parse('0x0000000810000000');
+final defaultBlackDiscs = BigInt.parse('0x0000000810000000');
 
 /// 後手(白)の初期配置
 ///
@@ -215,4 +215,4 @@ final blackInitialBoard = BigInt.parse('0x0000000810000000');
 ///    - - - - - - - -
 /// 8 | | | | | | | | |
 ///    - - - - - - - -
-final whiteInitialBoard = BigInt.parse('0x0000001008000000');
+final defaultWhiteDiscs = BigInt.parse('0x0000001008000000');
